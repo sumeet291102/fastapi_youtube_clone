@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'video.css' %}">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <div>
+            <img class="icon" src="{% static 'icons8-hamburger-menu.svg' %}" alt="">
+            <a href="/">
+                <img class="youtube" src="{% static 'YouTube-Logo.wine.svg' %}" alt="">
+            </a>
+        </div>
+        <div>
+            <div class="search">
+                <input class="search_input" type="text">
+                <img class="icon" src="{% static 'icons8-search.svg' %}" alt="">
+            </div>
+            <img class="hide icon" src="{% static 'microphone-svgrepo-com.svg' %}" alt="">
+        </div>
+        <div>
+            <a href="/create/">
+                <img class="icon" src="{% static 'add-video-icon.svg' %}" alt="">
+            </a>
+            <img class="hide icon" src="{% static 'notification-bell-svgrepo-com.svg' %}" alt="">
+            {% if logged_user %}
+                <a class="lb" href="{% url 'logout_view' %}">logout</a>
+                <a href="/user/?uname={{logged_user.username}}">
+                    {% if logged_user.profile_pic %}
+                        <div style="background-image:url('{{logged_user.profile_pic}}')" class="header_profile">
+                        </div>
+                    {% else %}
+                        <div style="background-image:url('{% static 'user-profile-avatar-svgrepo-com.svg' %}')" class="header_profile">
+                        </div>
+                    {% endif %}
+                </a>
+            {% else %}
+                <a class="lb" href="{% url 'login_page' %}">login</a>
+            {% endif %}
+        </div>
+    </header>
+    <div class="home">
+        <div class="sidebar">
+            <div class="sidebar_ele">
+                    <a class="sidebar_button" href="/">
+                        <img class="icon" src="{% static 'icons8-home.svg' %}" alt="">
+                        <p>Home</p>
+                    </a>
+                    <a class="sidebar_button" href="">
+                        <img class="icon" src="{% static 'icons8-youtube-shorts.svg' %}" alt="">
+                        <p>Shorts</p>
+                    </a>
+                    <a class="sidebar_button" href="">
+                        <img class="icon" src="{% static 'video-playlist-icon.svg' %}" alt="">
+                        <p>subscriptions</p>
+                    </a>
+            </div>
+            <div class="sidebar_ele">
+                <p>You</p>
+                    <a class="sidebar_button" href="">
+                        <img class="icon" src="{% static 'user-channel(1).svg' %}" alt="">
+                        <p>Your channel</p>
+                    </a>
+                    <a class="sidebar_button" href="">
+                        <img class="icon" src="{% static 'history-svgrepo-com.svg' %}" alt="">
+                        <p>History</p>
+                    </a>
+                    <a class="sidebar_button" href="">
+                        <img class="icon" src="{% static 'play-1008-svgrepo-com.svg' %}" alt="">
+                        <p>Your Video</p>
+                    </a>
+                    <a class="sidebar_button" href="">
+                        <img class="icon" src="{% static 'watch-later.svg' %}" alt="">
+                        <p>Watch later</p>
+                    </a>
+                    <a class="sidebar_button" href="">
+                        <img class="icon" src="{% static 'like-svgrepo-com.svg' %}" alt="">
+                        <p>liked videos</p>
+                    </a>
+            </div>
+        </div>
+        <div class="main">
+            <div class="main_left">
+                <video controls>
+                    <source src="{{video.url}}" type="video/mp4">
+                </video> 
+                <p>{{video.title}}</p>
+                <div class="main_left_details">
+                    <div class="profile_details">
+                        {% if video.uploaded_by.profile_pic %}
+                            <div style="background-image:url('{{video.uploaded_by.profile_pic}}')" class="profile">
+                            </div>
+                        {% else %}
+                            <div style="background-image:url('{% static 'user-profile-avatar-svgrepo-com.svg' %}')" class="profile">
+                            </div>
+                        {% endif %}
+                        <div>
+                            <a href="/user/?uname={{video.uploaded_by.username}}">
+                                <p>{{video.uploaded_by.username}}</p>
+                            </a>
+                            <p>{{subscribers_count}} subscribers</p>
+                        </div>
+                        {% if subscribed == True %}
+                            <a style="background-color: rgb(193, 193, 193); padding: 6px 18px;" class="sub" href="/subscribe/?video={{video.id}}&subscribee={{video.uploaded_by.id}}">
+                                <div>subscribed</div>
+                            </a>
+                        {% else %}
+                            <a style="background-color: black; color: white;" class="sub" href="/subscribe/?video={{video.id}}&subscribee={{video.uploaded_by.id}}">
+                                <div>subscribe</div>
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="like_details">
+                        <p>{{likes_count}}</p>
+                        {% if liked == True %}
+                            <a class="like" href="/like/?video={{video.id}}">
+                                <img class="icon" src="{% static 'like-svgrepo-com-filled.svg' %}" alt="liked">
+                            </a>
+                        {% else %}
+                            <a class="like" href="/like/?video={{video.id}}">
+                                <img class="icon" src="{% static 'like-svgrepo-com.svg' %}" alt="like">
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <p>{{video.description}}</p>
+                <p>Comments</p>
+                <form action="/comment/?id={{video.id}}" method="post" class="create_comment">
+                    {% csrf_token %}
+                    {% if logged_user.profile_pic %}
+                        <div style="background-image:url('{{logged_user.profile_pic}}')" class="profile">
+                        </div>
+                    {% else %}
+                        <div style="background-image:url('{% static 'user-profile-avatar-svgrepo-com.svg' %}')" class="profile">
+                        </div>
+                    {% endif %}
+                    <input type="text" name="comment" id="comment" class="comment" placeholder="Add a comment..." required>
+                    <button>Comment</button>
+                </form>
+                <div class="comments">
+                    {% for comment in comments_data %}
+                        <div class="comment_data">
+                            {% if comment.commented_by.profile_pic %}
+                                <div style="background-image:url('{{comment.commented_by.profile_pic}}')" class="profile">
+                                </div>
+                            {% else %}
+                                <div style="background-image:url('{% static 'user-profile-avatar-svgrepo-com.svg' %}')" class="profile">
+                                </div>
+                            {% endif %}
+                            <div>
+                                <a href="/user/?uname={{ comment.commented_by.username }}">@{{ comment.commented_by.username }}</a>
+                                <p>{{comment.content}}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="main_right">
+                {% for video in videos_data %}
+                    <div> 
+                        <a href="/video/?id={{video.id}}">
+                            <video class="vid">
+                                <source src="{{video.url}}" type="video/mp4">
+                            </video> 
+                            <p>{{ video.title }}</p>
+                            <a href="/user/?uname={{video.uploaded_by.username}}">{{ video.uploaded_by.username }}</a>
+                        </a>
+                    </div> 
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

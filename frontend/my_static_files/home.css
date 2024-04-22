@@ -1,0 +1,14 @@
+.content {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    padding-right: 20px;
+    height: fit-content;
+}
+
+.content_detail {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 5px;
+}
